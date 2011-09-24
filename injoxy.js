@@ -107,7 +107,8 @@ catch (e) {
 }
 proxy.start(config);
 
-fs.watchFile(config_file, {persistent: true, interval: 1000}, function(curr, prev) {
+fs.watchFile(config_file, {persistent: true, interval: 1000}, function (curr, prev) {
+	if (curr.mtime.getTime() == prev.mtime.getTime()) return;
 	sys.log("Config file change detected, restarting");
 	var config;
 	try {
