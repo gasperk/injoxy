@@ -6,7 +6,7 @@
 	},
 	"patterns": [
 		{"url": "http://www.iana.org/domains/example/",
-		"url_match": "exact",
+		"url_match": "equals",
 		"search": "Domains",
 		"inject": "<h1 style=\"color:red\">Domains</h1>",
 		"inject_method": "replace"}

@@ -33,8 +33,8 @@ var proxy = {
 				proxy_response.addListener('data', function(chunk) {
 					for (var i = 0; i < patterns.length; i++) {
 						var pattern = patterns[i];
-						if ((pattern.url_match == 'exact' && request.url == pattern.url) || 
-							(pattern.url_match == 'include' && request.url.indexOf(pattern.url) >= 0)) {
+						if ((pattern.url_match == 'equals' && request.url == pattern.url) || 
+							(pattern.url_match == 'includes' && request.url.indexOf(pattern.url) >= 0)) {
 							response_buffer += chunk.toString();
 							return;
 						}
