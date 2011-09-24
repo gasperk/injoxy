@@ -43,7 +43,6 @@ var proxy = {
 				});
 				proxy_response.addListener('end', function() {
 					if (response_buffer.length > 0) {
-						console.log("Injecting something");
 						for (var i = 0; i < patterns.length; i++) {
 							var pattern = patterns[i];
 							var repl_str = '';
