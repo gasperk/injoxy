@@ -36,12 +36,15 @@ var proxy = {
 				
 				proxy_request.addListener('response', function (proxy_response) {
 					var response_buffer = '';
+					var patterns_matched = [];
 					proxy_response.addListener('data', function(chunk) {
 						for (var i = 0; i < config.patterns.length; i++) {
 							var pattern = config.patterns[i];
+							console.log(pattern.url, request.url.indexOf(pattern.url));
 							if ((pattern.url_match == 'equals' && request.url == pattern.url) || 
 								(pattern.url_match == 'includes' && request.url.indexOf(pattern.url) >= 0)) {
 								response_buffer += chunk.toString();
+								patterns_matched[patterns_matched.length] = pattern;
 								return;
 							}
 						}
@@ -49,8 +52,8 @@ var proxy = {
 					});
 					proxy_response.addListener('end', function() {
 						if (response_buffer.length > 0) {
-							for (var i = 0; i < config.patterns.length; i++) {
-								var pattern = config.patterns[i];
+							for (var i = 0; i < patterns_matched.length; i++) {
+								var pattern = patterns_matched[i];
 								var repl_str = '';
 								if (pattern.inject_method == 'before') repl_str = pattern.inject + pattern.search;
 								else if (pattern.inject_method == 'after') repl_str = pattern.search + pattern.inject;
