@@ -22,6 +22,7 @@ var proxy = {
 				if (config.settings.no_encoding && request.headers['accept-encoding']) {
 						request.headers['accept-encoding'] = '';
 				}
+				request.headers['connection'] = 'Close';
 				var proxy_request = proxy.request(request.method, request.url, request.headers);
 				
 				proxy.addListener('error', function(err) {
@@ -38,13 +39,27 @@ var proxy = {
 					var response_buffer = '';
 					var patterns_matched = [];
 					proxy_response.addListener('data', function(chunk) {
-						for (var i = 0; i < config.patterns.length; i++) {
-							var pattern = config.patterns[i];
-							if ((pattern.url_match == 'equals' && request.url == pattern.url) || 
-								(pattern.url_match == 'includes' && request.url.indexOf(pattern.url) >= 0)) {
-								response_buffer += chunk.toString();
-								patterns_matched[patterns_matched.length] = pattern;
-								return;
+						
+						var try_match = false;
+						var sepp = proxy_response.headers['content-type'].indexOf(';');
+						if (sepp === -1) sepp = proxy_response.headers['content-type'].length;
+						var resp_ct = proxy_response.headers['content-type'].substr(0, sepp);
+						for (var i = 0; i < config.settings.content_types.length; i++) {
+							if (config.settings.content_types[i] == resp_ct) {
+								try_match = true;
+								break;
+							}
+						}
+						
+						if (try_match) {
+							for (var i = 0; i < config.patterns.length; i++) {
+								var pattern = config.patterns[i];
+								if ((pattern.url_match == 'equals' && request.url == pattern.url) || 
+									(pattern.url_match == 'includes' && request.url.indexOf(pattern.url) >= 0)) {
+									response_buffer += chunk.toString();
+									patterns_matched[patterns_matched.length] = pattern;
+									return;
+								}
 							}
 						}
 						response.write(chunk);
