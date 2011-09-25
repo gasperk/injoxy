@@ -19,8 +19,8 @@ var proxy = {
 				}
 				
 				var proxy = http.createClient(port, host);
-				if (config.settings.no_encoding && request.headers['accept-encoding']) {
-						request.headers['accept-encoding'] = '';
+				if (request.headers['accept-encoding']) {
+					request.headers['accept-encoding'] = '';
 				}
 				request.headers['connection'] = 'Close';
 				var proxy_request = proxy.request(request.method, request.url, request.headers);

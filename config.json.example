@@ -1,9 +1,8 @@
 {
 	"settings": {
 		"proxy_port": 8080,
-		"no_encoding": true,
 		"bust_cache": true,
-		"content_types": "text/html"
+		"content_types": ["text/html", "text/plain"]
 	},
 	"patterns": [
 		{"url": "http://www.iana.org/domains/example/",
