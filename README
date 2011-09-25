@@ -15,6 +15,7 @@ Config:
     proxy_port: port on which the proxy listens
     no_encoding: remove Accept-encoding headers from the request (needed for gzip responses)
     bust_cache: rewrite cache headers in the response, instructing the browser not to cache anything
+    content_types: an array of content types to match
   patterns:
     an array of spec:
       url: url to trigger the injection
@@ -24,3 +25,7 @@ Config:
       inject_method: 'before', 'after', and 'replace' the search pattern
       
   Also see: config.json.example
+  
+Technical details:
+  The proxy forces connection closing on both sides by adding "Connection: close" header to
+  the request and response. This is to avoid node's file limit hit.
