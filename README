@@ -2,8 +2,8 @@ Run:
   node injoxy.js
   Uses the default config.json configuration file
   
-  node injoxy.js mycfg
-  Uses mycfg as the config
+  node injoxy.js mycfg.json
+  Uses mycfg.json as the config
   
   Config files are monitored for changes and proxy restarts when this happens automatically.
 
@@ -14,16 +14,14 @@ Config:
   settings:
     proxy_port: port on which the proxy listens
     bust_cache: rewrite cache headers in the response, instructing the browser not to cache anything
-    content_types: an array of content types to match
   patterns:
     an array of spec:
-      url: url to trigger the injection
+      url: url to match
       url_match: 'equals' means url must match exacly, 'includes' just looks for a substring
+      content_types: an array of content types to match
       search: regex string that defines the pattern you're looking for in the response
       inject: the string to inject in the document
       inject_method: 'before', 'after', and 'replace' the search pattern
-      
-  Also see: config.json.example
   
 Technical details:
   The proxy forces connection closing on both sides by adding "Connection: close" header to

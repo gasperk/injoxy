@@ -1,12 +1,12 @@
 {
 	"settings": {
 		"proxy_port": 8080,
-		"bust_cache": true,
-		"content_types": ["text/html", "text/plain"]
+		"bust_cache": true
 	},
 	"patterns": [
 		{"url": "http://www.iana.org/domains/example/",
 		"url_match": "equals",
+		"content_types": ["text/html", "text/plain"],
 		"search": "Domains",
 		"inject": "<h1 style=\"color:red\">Domains</h1>",
 		"inject_method": "replace"}

@@ -38,40 +38,45 @@ var proxy = {
 				proxy_request.addListener('response', function (proxy_response) {
 					var response_buffer = '';
 					var patterns_matched = [];
-					proxy_response.addListener('data', function(chunk) {
-						
-						var try_match = false;
-						var sepp = proxy_response.headers['content-type'].indexOf(';');
-						if (sepp === -1) sepp = proxy_response.headers['content-type'].length;
-						var resp_ct = proxy_response.headers['content-type'].substr(0, sepp);
-						for (var i = 0; i < config.settings.content_types.length; i++) {
-							if (config.settings.content_types[i] == resp_ct) {
-								try_match = true;
-								break;
-							}
-						}
-						
-						if (try_match) {
-							for (var i = 0; i < config.patterns.length; i++) {
-								var pattern = config.patterns[i];
-								if ((pattern.url_match == 'equals' && request.url == pattern.url) || 
-									(pattern.url_match == 'includes' && request.url.indexOf(pattern.url) >= 0)) {
-									response_buffer += chunk.toString();
-									patterns_matched[patterns_matched.length] = pattern;
-									return;
+					var process = false;
+					
+					for (var i = 0; i < config.patterns.length; i++) {
+						var pattern = config.patterns[i];
+						if ((pattern.url_match == 'equals' && request.url == pattern.url) || 
+							(pattern.url_match == 'includes' && request.url.indexOf(pattern.url) >= 0)) {
+							if (proxy_response.headers['content-type']) {
+								var sepp = proxy_response.headers['content-type'].indexOf(';');
+								if (sepp === -1) sepp = proxy_response.headers['content-type'].length;
+								var resp_ct = proxy_response.headers['content-type'].substr(0, sepp);
+								for (var j = 0; j < pattern.content_types.length; j++) {
+									if (pattern.content_types[j] == resp_ct) {
+										process = true;
+										patterns_matched[patterns_matched.length] = pattern;
+										break;
+									}
 								}
 							}
 						}
-						response.write(chunk);
+					}
+					
+					proxy_response.addListener('data', function(chunk) {
+						if (process) {
+							response_buffer += chunk.toString();
+						}
+						else {
+							response.write(chunk);
+						}
 					});
 					proxy_response.addListener('end', function() {
-						if (response_buffer.length > 0) {
+						if (process) {
+							console.log(patterns_matched);
 							for (var i = 0; i < patterns_matched.length; i++) {
 								var pattern = patterns_matched[i];
 								var repl_str = '';
 								if (pattern.inject_method == 'before') repl_str = pattern.inject + pattern.search;
 								else if (pattern.inject_method == 'after') repl_str = pattern.search + pattern.inject;
 								else if (pattern.inject_method == 'replace') repl_str = pattern.inject;
+								console.log(pattern.search, '->', repl_str);
 								response_buffer = response_buffer.replace(new RegExp(pattern.search, 'g'), repl_str);
 							}
 							response.write(response_buffer);
