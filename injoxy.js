@@ -69,14 +69,12 @@ var proxy = {
 					});
 					proxy_response.addListener('end', function() {
 						if (process) {
-							console.log(patterns_matched);
 							for (var i = 0; i < patterns_matched.length; i++) {
 								var pattern = patterns_matched[i];
 								var repl_str = '';
 								if (pattern.inject_method == 'before') repl_str = pattern.inject + pattern.search;
 								else if (pattern.inject_method == 'after') repl_str = pattern.search + pattern.inject;
 								else if (pattern.inject_method == 'replace') repl_str = pattern.inject;
-								console.log(pattern.search, '->', repl_str);
 								response_buffer = response_buffer.replace(new RegExp(pattern.search, 'g'), repl_str);
 							}
 							response.write(response_buffer);
